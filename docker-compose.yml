@@ -1,21 +1,43 @@
-version: '2.2'
+version: "2.2"
 services:
   redis_master:
-    image: redis:3
+    image: redis:5
     container_name: redis_master
     ports:
-      - '6379:6379'
-  redis_slave:
-    image: redis:3
-    container_name: redis_slave
+      - "6379:6379"
+  redis_slave_one:
+    image: redis:5
+    container_name: redis_slave_one
     command: redis-server --port 6380 --slaveof "${EXTERNAL_HOST}" 6379 --slave-announce-ip "${EXTERNAL_HOST}"
     ports:
-      - '6380:6380'
-  sentinel:
+      - "6380:6380"
+  redis_slave_two:
+    image: redis:5
+    container_name: redis_slave_two
+    command: redis-server --port 6381 --slaveof "${EXTERNAL_HOST}" 6379 --slave-announce-ip "${EXTERNAL_HOST}"
+    ports:
+      - "6381:6381"
+  sentinel_one:
     build: ./sentinel
     container_name: redis_sentinel
     ports:
-      - '26379:26379'
+      - "26379:26379"
+    environment:
+      - SENTINEL_NAME=mysentinel
+      - HOST_IP="${EXTERNAL_HOST}"
+  sentinel_rwo:
+    build: ./sentinel
+    container_name: redis_sentinel_two
+    ports:
+      - "26380:26379"
+    environment:
+      - SENTINEL_NAME=mysentinel
+      - HOST_IP="${EXTERNAL_HOST}"
+  sentinel_three:
+    build: ./sentinel
+    container_name: redis_sentinel_three
+    ports:
+      - "26381:26379"
     environment:
       - SENTINEL_NAME=mysentinel
       - HOST_IP="${EXTERNAL_HOST}"

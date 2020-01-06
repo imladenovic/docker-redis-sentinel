@@ -1,4 +1,4 @@
-FROM redis:3
+FROM redis:5
 
 EXPOSE 26379
 COPY sentinel.conf /etc/redis/sentinel.conf
